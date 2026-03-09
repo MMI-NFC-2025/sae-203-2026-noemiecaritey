@@ -1,0 +1,38 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var scenes = await pb.collection("scene").getFullList({
+ sort: "nom",
+});
+---
+
+<Layout title="Scènes">
+ <h1 class="text-4xl font-black mb-8">Scènes</h1>
+
+ <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+   {scenes.map(function (scene) {
+     var photoUrl = "";
+     if (scene.photo) {
+       photoUrl = "http://127.0.0.1:8090/api/files/" + scene.collectionId + "/" + scene.id + "/" + scene.photo;
+     }
+
+     return (
+       <a href={"/scenes/" + scene.id} class="group relative block overflow-hidden aspect-[4/3]">
+         {photoUrl ? (
+           <img src={photoUrl} alt={scene.nom}
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+         ) : (
+           <div class="absolute inset-0 bg-green-800"></div>
+         )}
+         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+         <div class="absolute bottom-0 left-0 p-5">
+           <h2 class="text-2xl font-black">{scene.nom}</h2>
+           <p class="text-green-300">{scene.localisation}</p>
+           <p class="text-yellow-400 font-semibold">{scene.capacite} personnes</p>
+         </div>
+       </a>
+     );
+   })}
+ </div>
+</Layout>

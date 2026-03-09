@@ -1,0 +1,111 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var id = Astro.params.id;
+var artiste = await pb.collection("artiste").getOne(id);
+
+// Représentations avec scènes
+var representations = await pb.collection("representation").getFullList({
+ filter: 'artiste = "' + id + '"',
+ sort: "date_heure",
+ expand: "scene",
+});
+
+// Photo principale
+var photoUrl = "";
+if (artiste.photo_principale) {
+ photoUrl = "http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
+}
+
+// Galerie
+var galerieUrls = [];
+if (artiste.galerie) {
+ for (var i = 0; i < artiste.galerie.length; i++) {
+   galerieUrls.push(
+     "http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.galerie[i]
+   );
+ }
+}
+---
+
+<Layout title={artiste.nom}>
+
+ <!-- En-tête -->
+ <div class="relative overflow-hidden mb-8">
+   {photoUrl ? (
+     <img src={photoUrl} alt={artiste.nom} class="w-full h-80 md:h-96 object-cover" />
+   ) : (
+     <div class="w-full h-80 md:h-96 bg-green-800"></div>
+   )}
+   <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+   <div class="absolute bottom-0 left-0 p-8">
+     <h1 class="text-4xl md:text-5xl font-black">{artiste.nom}</h1>
+     <p class="text-yellow-400 text-xl font-semibold mt-2">{artiste.genre_musical}</p>
+   </div>
+ </div>
+
+ <!-- Contenu en 2 colonnes sur desktop -->
+ <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+   <!-- Colonne principale (2/3) -->
+   <div class="md:col-span-2">
+
+     <!-- Description -->
+     <h2 class="text-2xl font-bold mb-4">Biographie</h2>
+     <div class="text-green-100 leading-relaxed mb-8" set:html={artiste.description} />
+
+     <!-- Galerie photo -->
+     {galerieUrls.length > 0 && (
+       <div>
+         <h2 class="text-2xl font-bold mb-4">Galerie</h2>
+         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+           {galerieUrls.map(function (url) {
+             return (
+               <img src={url} alt={artiste.nom} class="rounded-xl w-full h-40 object-cover hover:scale-105 transition-transform duration-300" />
+             );
+           })}
+         </div>
+       </div>
+     )}
+   </div>
+
+   
+   <div>
+     <div class="bg-green-800  p-6">
+       <h2 class="text-xl font-bold mb-4">Représentations</h2>
+       <div class="space-y-4">
+         {representations.map(function (rep) {
+           var date = new Date(rep.date_heure);
+           var dateTexte = date.toLocaleDateString("fr-FR", {
+             weekday: "long",
+             day: "numeric",
+             month: "long",
+           });
+           var heureTexte = date.toLocaleTimeString("fr-FR", {
+             hour: "2-digit",
+             minute: "2-digit",
+           });
+
+           return (
+             <div class="border-b border-green-600 pb-4">
+               <p class="font-bold text-yellow-400">{dateTexte}</p>
+               <p class="text-green-100">{heureTexte}</p>
+               <a href={"/scenes/" + rep.expand.scene.id} class="text-white hover:text-yellow-400 transition-colors">
+                 📍 {rep.expand.scene.nom}
+               </a>
+             </div>
+           );
+         })}
+       </div>
+     </div>
+
+     <!-- Retour -->
+     <a href="/artistes" class="inline-block mt-6 bg-yellow-400 text-green-900 font-bold px-6 py-3 rounded-full hover:bg-yellow-300 transition-colors">
+       ← Tous les artistes
+     </a>
+   </div>
+
+ </div>
+</Layout>

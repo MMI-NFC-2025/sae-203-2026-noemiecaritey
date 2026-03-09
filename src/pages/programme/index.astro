@@ -1,0 +1,145 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var representations = await pb.collection("representation").getFullList({
+ sort: "date_heure",
+ expand: "artiste,scene",
+});
+
+// Jours uniques
+var jours = [];
+for (var i = 0; i < representations.length; i++) {
+ var date = new Date(representations[i].date_heure);
+ var jour = date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+ if (jours.indexOf(jour) === -1) {
+   jours.push(jour);
+ }
+}
+
+// Genres uniques
+var genres = [];
+for (var i = 0; i < representations.length; i++) {
+ var genre = representations[i].expand.artiste.genre_musical;
+ if (genres.indexOf(genre) === -1) {
+   genres.push(genre);
+ }
+}
+
+// Scènes uniques
+var scenes = [];
+var scenesNoms = [];
+for (var i = 0; i < representations.length; i++) {
+ var scene = representations[i].expand.scene;
+ if (scenesNoms.indexOf(scene.nom) === -1) {
+   scenesNoms.push(scene.nom);
+   scenes.push(scene);
+ }
+}
+---
+
+<Layout title="Programme">
+ <h1 class="text-4xl font-black mb-6">Programme</h1>
+
+ <!-- Filtres -->
+ <div class="flex flex-wrap gap-4 mb-8">
+   <div>
+     <label class="block text-sm text-green-300 mb-1">Jour</label>
+     <select id="filtre-jour" class="bg-green-800 border border-green-600 rounded-full px-4 py-2 text-white">
+       <option value="tous">Tous les jours</option>
+       {jours.map(function (jour) {
+         return <option value={jour}>{jour}</option>;
+       })}
+     </select>
+   </div>
+   <div>
+     <label class="block text-sm text-green-300 mb-1">Genre</label>
+     <select id="filtre-genre" class="bg-green-800 border border-green-600  px-4 py-2 text-white">
+       <option value="tous">Tous les genres</option>
+       {genres.map(function (genre) {
+         return <option value={genre}>{genre}</option>;
+       })}
+     </select>
+   </div>
+   <div>
+     <label class="block text-sm text-green-300 mb-1">Scène</label>
+     <select id="filtre-scene" class="bg-green-800 border border-green-600  px-4 py-2 text-white">
+       <option value="tous">Toutes les scènes</option>
+       {scenes.map(function (scene) {
+         return <option value={scene.nom}>{scene.nom}</option>;
+       })}
+     </select>
+   </div>
+ </div>
+
+
+
+ <!-- Liste -->
+ <div id="liste-programme" class="space-y-4">
+   {representations.map(function (rep) {
+     var artiste = rep.expand.artiste;
+     var scene = rep.expand.scene;
+     var date = new Date(rep.date_heure);
+     var jourTexte = date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+     var jourLong = date.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+     var heureTexte = date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+
+     var photoUrl = "";
+     if (artiste.photo_principale) {
+       photoUrl = "http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
+     }
+
+     return (
+       <div
+         class="programme-item flex items-center gap-4 bg-green-800 p-4  hover:bg-green-600 transition-colors"
+         data-jour={jourTexte}
+         data-genre={artiste.genre_musical}
+         data-scene={scene.nom}
+         >
+         {photoUrl && (
+           <img src={photoUrl} alt={artiste.nom} class="w-16 h-16 md:w-20 md:h-20 object-cover " />
+         )}
+         <div class="text-center min-w-24">
+           <p class="text-sm text-green-300">{jourLong}</p>
+           <p class="text-xl font-bold text-yellow-400">{heureTexte}</p>
+         </div>
+         <div>
+           <a href={"/artistes/" + artiste.id} class="text-lg font-bold hover:text-yellow-400 transition-colors">{artiste.nom}</a>
+           <p class="text-sm text-green-300">{artiste.genre_musical}</p>
+           <a href={"/scenes/" + scene.id} class="text-sm text-yellow-400 hover:underline">{scene.nom}</a>
+         </div>
+       </div>
+     );
+   })}
+ </div>
+
+ <script>
+   var filtreJour = document.getElementById("filtre-jour");
+   var filtreGenre = document.getElementById("filtre-genre");
+   var filtreScene = document.getElementById("filtre-scene");
+   var items = document.querySelectorAll(".programme-item");
+
+   function filtrer() {
+     var jour = filtreJour.value;
+     var genre = filtreGenre.value;
+     var scene = filtreScene.value;
+
+     for (var i = 0; i < items.length; i++) {
+       var item = items[i];
+       var matchJour = (jour === "tous") || (item.dataset.jour === jour);
+       var matchGenre = (genre === "tous") || (item.dataset.genre === genre);
+       var matchScene = (scene === "tous") || (item.dataset.scene === scene);
+
+       if (matchJour && matchGenre && matchScene) {
+         item.style.display = "";
+       } else {
+         item.style.display = "none";
+       }
+     }
+   }
+
+   filtreJour.addEventListener("change", filtrer);
+   filtreGenre.addEventListener("change", filtrer);
+   filtreScene.addEventListener("change", filtrer);
+ </script>
+</Layout>

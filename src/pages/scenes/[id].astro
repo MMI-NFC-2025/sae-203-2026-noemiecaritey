@@ -1,0 +1,103 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var id = Astro.params.id;
+var scene = await pb.collection("scene").getOne(id);
+
+var representations = await pb.collection("representation").getFullList({
+ filter: 'scene = "' + id + '"',
+ sort: "date_heure",
+ expand: "artiste",
+});
+
+var photoUrl = "";
+if (scene.photo) {
+ photoUrl = "http://127.0.0.1:8090/api/files/" + scene.collectionId + "/" + scene.id + "/" + scene.photo;
+}
+---
+
+<Layout title={scene.nom}>
+
+ <!-- En-tête avec photo -->
+ <div class="relative overflow-hidden mb-8">
+   {photoUrl ? (
+     <img src={photoUrl} alt={scene.nom} class="w-full h-80 md:h-96 object-cover" />
+   ) : (
+     <div class="w-full h-80 md:h-96 bg-green-800"></div>
+   )}
+   <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+   <div class="absolute bottom-0 left-0 p-8">
+     <h1 class="text-4xl md:text-5xl font-black">{scene.nom}</h1>
+     <p class="text-green-300 text-lg mt-2">📍 {scene.localisation}</p>
+     <p class="text-yellow-400 font-semibold">Capacité : {scene.capacite} personnes</p>
+   </div>
+ </div>
+
+ <!-- Description -->
+ {scene.description && (
+   <div class="text-green-100 leading-relaxed mb-8 max-w-3xl" set:html={scene.description} />
+ )}
+
+ <!-- Artistes programmés -->
+ <h2 class="text-2xl font-bold mb-6">Artistes programmés</h2>
+
+ <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+   {representations.map(function (rep) {
+     var artiste = rep.expand.artiste;
+     var date = new Date(rep.date_heure);
+     var dateTexte = date.toLocaleDateString("fr-FR", {
+       day: "numeric",
+       month: "long",
+       year: "numeric",
+     });
+     var heureTexte = date.toLocaleTimeString("fr-FR", {
+       hour: "2-digit",
+       minute: "2-digit",
+     });
+
+     var artistePhoto = "";
+     if (artiste.photo_principale) {
+       artistePhoto = "http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
+     }
+
+     return (
+       <a href={"/artistes/" + artiste.id} class="group relative block  overflow-hidden aspect-[4/3]">
+         {artistePhoto ? (
+           <img src={artistePhoto} alt={artiste.nom}
+             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+         ) : (
+           <div class="absolute inset-0 bg-green-800"></div>
+         )}
+         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+         <div class="absolute bottom-0 left-0 p-5">
+           <h3 class="text-xl font-black">{artiste.nom}</h3>
+           <p class="text-yellow-400 font-semibold">{dateTexte} – {heureTexte}</p>
+         </div>
+       </a>
+     );
+   })}
+ </div>
+
+ <!-- Retour -->
+ <a href="/scenes" class="inline-block mt-8 bg-yellow-400 text-green-900 font-bold px-6 py-3 rounded-full hover:bg-yellow-300 transition-colors">
+   ← Toutes les scènes
+ </a>
+
+ 
+ {scene.localisation_gps && (
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+   <script is:inline src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   <script is:inline define:vars={{ lat: scene.localisation_gps.lat, lng: scene.localisation_gps.lon, nom: scene.nom }}>
+     var carte = L.map("carte").setView([lat, lng], 15);
+
+     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+     }).addTo(carte);
+
+     L.marker([lat, lng]).addTo(carte).bindPopup("<b>" + nom + "</b>").openPopup();
+   </script>
+ )}
+
+</Layout>
