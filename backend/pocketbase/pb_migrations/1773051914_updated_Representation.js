@@ -1,0 +1,64 @@
+/// <reference path="../pb_data/types.d.ts" />
+migrate((app) => {
+  const collection = app.findCollectionByNameOrId("pbc_3277472977")
+
+  // add field
+  collection.fields.addAt(1, new Field({
+    "autogeneratePattern": "",
+    "hidden": false,
+    "id": "text2617718095",
+    "max": 0,
+    "min": 0,
+    "name": "artiste",
+    "pattern": "",
+    "presentable": false,
+    "primaryKey": false,
+    "required": false,
+    "system": false,
+    "type": "text"
+  }))
+
+  // add field
+  collection.fields.addAt(2, new Field({
+    "autogeneratePattern": "",
+    "hidden": false,
+    "id": "text3648647130",
+    "max": 0,
+    "min": 0,
+    "name": "scene",
+    "pattern": "",
+    "presentable": false,
+    "primaryKey": false,
+    "required": false,
+    "system": false,
+    "type": "text"
+  }))
+
+  // add field
+  collection.fields.addAt(3, new Field({
+    "hidden": false,
+    "id": "date2877489204",
+    "max": "",
+    "min": "",
+    "name": "date_heure",
+    "presentable": false,
+    "required": false,
+    "system": false,
+    "type": "date"
+  }))
+
+  return app.save(collection)
+}, (app) => {
+  const collection = app.findCollectionByNameOrId("pbc_3277472977")
+
+  // remove field
+  collection.fields.removeById("text2617718095")
+
+  // remove field
+  collection.fields.removeById("text3648647130")
+
+  // remove field
+  collection.fields.removeById("date2877489204")
+
+  return app.save(collection)
+})
