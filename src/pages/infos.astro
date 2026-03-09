@@ -1,0 +1,58 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Infos pratiques">
+  <h1 class="text-4xl font-black mb-8">Infos pratiques</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+
+    <section class="bg-green-800  p-8">
+      <h2 class="text-2xl font-bold mb-4 text-yellow-400"> Tarifs</h2>
+
+      <div class="space-y-2 text-lg">
+        <p class="font-semibold">Pass multi-jours</p>
+        <p>Pass 3 jours au choix : 70€</p>
+        <p>Pass 4 jours : 90€</p>
+        <p>Billets à l'unité : 35€</p>
+      </div>
+
+      <div class="space-y-2 text-lg">
+        <p class="font-semibold">Tarifs réduits</p>
+        <p>Tarif étudiant (-28 ans)</p>
+        <p>Tarif jeune (18-25 ans)</p>
+        <p>Gratuit pour les moins de 12 ans</p>
+      </div>
+    </section>
+
+    <section class="bg-green-800  p-8">
+      <h2 class="text-2xl font-bold mb-4 text-yellow-400">Hébergements</h2>
+      <p class="text-green-100">Hôtel Les Tilleuls Montbéliard sud-Audincourt</p>
+        <p>Hôtel Restaurant du Jura</p>
+        <p>Val Hôtel, Montbéliard Sud</p>
+    </section>
+
+    <section class="bg-green-800  p-8 md:col-span-2">
+      <h2 class="text-2xl font-bold mb-4 text-yellow-400">Transport</h2>
+      <p class="text-green-100">Accès en train, voiture, covoiturage, parkings.</p>
+    </section>
+
+  </div>
+
+  <!-- FAQ -->
+  <h2 class="text-3xl font-black mb-6">FAQ</h2>
+  <div class="space-y-4 max-w-3xl">
+    <details class="bg-green-800 rounded-2xl p-6 group">
+      <summary class="font-bold cursor-pointer text-lg">Quels sont les horaires d’ouverture du festival et des concerts chaque jour ?</summary>
+      <p class="mt-3 text-green-100">Jamais en vrai, viens pas</p>
+    </details>
+    <details class="bg-green-800 rounded-2xl p-6 group">
+      <summary class="font-bold cursor-pointer text-lg">Quels types de billets sont proposés (pass 4 jours, pass 1 jour, tarifs réduits) et comment lesacheter ?</summary>
+      <p class="mt-3 text-green-100">Y'a pas de billet, reste chez toi</p>
+    </details>
+    <details class="bg-green-800 rounded-2xl p-6 group">
+      <summary class="font-bold cursor-pointer text-lg">Le festival est-il éco-responsable et quelles actions sont mises en place (tri des déchets, covoiturage, gobelets réutilisables, etc.) ?</summary>
+      <p class="mt-3 text-green-100">Non dans le France de Macron on n'a pas le temps.</p>
+    </details>
+  </div>
+</Layout>

@@ -1,10 +1,92 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import pb from "../lib/pocketbase.mjs";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+var representations = await pb.collection("representation").getFullList({
+  sort: "date_heure",
+  expand: "artiste,scene",
+});
 ---
 
-<Layout>
-	<h1>Welcome to Astro!</h1>
+<Layout title="Accueil">
+
+  <!-- Hero bandeau -->
+  <section class="text-center py-16 mb-12">
+    <p class="text-yellow-400 text-lg font-semibold mb-4 uppercase tracking-widest">Festival de musique</p>
+    <h1 class="text-6xl md:text-8xl font-black mb-6">
+      <span class="text-white">Echos Sonores</span>
+    <p class="text-green-300 text-lg mb-8">Lieu du festival</p>
+    <a href="#" class="bg-yellow-400 text-green-900 font-bold px-10 py-4 rounded-full text-lg hover:bg-yellow-300 transition-colors">
+      Billetterie
+    </a>
+  </section>
+
+  <!-- Aperçu programmation -->
+  <section class="mb-12">
+    <h2 class="text-3xl font-black mb-6">Programmation</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {representations.map(function (rep) {
+        var artiste = rep.expand.artiste;
+        var scene = rep.expand.scene;
+        var date = new Date(rep.date_heure);
+        var dateTexte = date.toLocaleDateString("fr-FR", {
+          day: "numeric",
+          month: "long",
+        });
+        var heureTexte = date.toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+
+        var photoUrl = "";
+        if (artiste.photo_principale) {
+          photoUrl = "http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
+        }
+
+        return (
+          <a href={"/artistes/" + artiste.id} class="group relative block overflow-hidden aspect-[4/3]">
+            {photoUrl ? (
+              <img src={photoUrl} alt={artiste.nom}
+                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            ) : (
+              <div class="absolute inset-0 bg-green-800"></div>
+            )}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-0 left-0 p-5">
+              <h3 class="text-xl font-black">{artiste.nom}</h3>
+              <p class="text-yellow-400 font-semibold">{dateTexte} – {heureTexte}</p>
+              <p class="text-green-300 text-sm">{scene.nom}</p>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+    <div class="mt-6 text-center">
+      <a href="/programme" class="bg-yellow-400 text-green-900 font-bold px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors">
+        Voir le programme complet
+      </a>
+    </div>
+  </section>
+
+  <!-- Blocs navigation -->
+  <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+    <a href="/artistes" class="bg-green-800 p-8 text-center hover:bg-green-600 transition-colors">
+      <h3 class="text-2xl font-bold mb-2">Artistes</h3>
+      <p class="text-green-300">Découvrez la programmation</p>
+    </a>
+    <a href="/scenes" class="bg-green-800 p-8 text-center hover:bg-green-600 transition-colors">
+      <h3 class="text-2xl font-bold mb-2">Scènes</h3>
+      <p class="text-green-300">Explorez les lieux</p>
+    </a>
+    <a href="/infos" class="bg-green-800 p-8 text-center hover:bg-green-600 transition-colors">
+      <h3 class="text-2xl font-bold mb-2">Infos pratiques</h3>
+      <p class="text-green-300">Accès, tarifs, hébergement</p>
+    </a>
+  </section>
+
+  <!-- Partenaires -->
+  <section class="mb-12">
+    <h2 class="text-3xl font-black mb-4">Partenaires</h2>
+  </section>
+
 </Layout>

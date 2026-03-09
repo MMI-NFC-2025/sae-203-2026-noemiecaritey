@@ -20,7 +20,7 @@ for (var i = 0; i < representations.length; i++) {
 // Genres uniques
 var genres = [];
 for (var i = 0; i < representations.length; i++) {
- var genre = representations[i].expand.artiste.genre_musical;
+ var genre = representations[i].expand.artiste.genre;
  if (genres.indexOf(genre) === -1) {
    genres.push(genre);
  }
@@ -93,7 +93,7 @@ for (var i = 0; i < representations.length; i++) {
        <div
          class="programme-item flex items-center gap-4 bg-green-800 p-4  hover:bg-green-600 transition-colors"
          data-jour={jourTexte}
-         data-genre={artiste.genre_musical}
+         data-genre={artiste.genre}
          data-scene={scene.nom}
          >
          {photoUrl && (
@@ -105,7 +105,7 @@ for (var i = 0; i < representations.length; i++) {
          </div>
          <div>
            <a href={"/artistes/" + artiste.id} class="text-lg font-bold hover:text-yellow-400 transition-colors">{artiste.nom}</a>
-           <p class="text-sm text-green-300">{artiste.genre_musical}</p>
+           <p class="text-sm text-green-300">{artiste.genre}</p>
            <a href={"/scenes/" + scene.id} class="text-sm text-yellow-400 hover:underline">{scene.nom}</a>
          </div>
        </div>
