@@ -1,0 +1,110 @@
+---
+
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var url = new URL(Astro.request.url);
+var id = url.searchParams.get("id");
+var scene = null;
+
+if (id) {
+  scene = await pb.collection("scene").getOne(id);
+}
+
+var message = "";
+if (Astro.request.method === "POST") {
+  var formData = await Astro.request.formData();
+
+  var data = {
+    nom: formData.get("nom"),
+    description: formData.get("description"),
+    localisation: formData.get("localisation"),
+    capacite: Number(formData.get("capacite")),
+  };
+
+  // Gérer la photo
+  var photo = formData.get("photo");
+  if (photo && photo.size > 0) {
+    data.photo = photo;
+  }
+
+  if (id) {
+    await pb.collection("scene").update(id, data);
+    message = "Scène modifiée avec succès !";
+    scene = await pb.collection("scene").getOne(id);
+  } else {
+    var nouvelleScene = await pb.collection("scene").create(data);
+    message = "Scène créée avec succès !";
+    id = nouvelleScene.id;
+    scene = nouvelleScene;
+  }
+}
+---
+
+<Layout title={id ? "Modifier une scène" : "Ajouter une scène"}>
+
+  <script is:inline>
+    if (!localStorage.getItem("pb_token")) {
+      window.location.href = "/connexion";
+    }
+  </script>
+
+  <h1 class="text-4xl font-black mb-8">{id ? "Modifier une scène" : "Ajouter une scène"}</h1>
+
+  {message && (
+    <div class="bg-green-500 text-white p-4 rounded-2xl mb-6 font-semibold">
+      {message}
+    </div>
+  )}
+
+  <form method="POST" enctype="multipart/form-data" class="max-w-2xl space-y-6">
+
+    <div>
+      <label for="nom" class="block text-sm text-green-300 mb-1">Nom de la scène</label>
+      <input type="text" id="nom" name="nom" required
+        value={scene ? scene.nom : ""}
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+    </div>
+
+    <div>
+      <label for="description" class="block text-sm text-green-300 mb-1">Description</label>
+      <textarea id="description" name="description" rows="5"
+        class="w-full px-4 py-3 rounded-2xl text-gray-900 outline-none">{scene ? scene.description : ""}</textarea>
+    </div>
+
+    <div>
+      <label for="localisation" class="block text-sm text-green-300 mb-1">Localisation</label>
+      <input type="text" id="localisation" name="localisation"
+        value={scene ? scene.localisation : ""}
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+    </div>
+
+    <div>
+      <label for="capacite" class="block text-sm text-green-300 mb-1">Capacité</label>
+      <input type="number" id="capacite" name="capacite"
+        value={scene ? scene.capacite : ""}
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+    </div>
+
+    <div>
+      <label for="photo" class="block text-sm text-green-300 mb-1">Photo</label>
+      <input type="file" id="photo" name="photo" accept="image/*"
+        class="w-full text-white" />
+      {scene && scene.photo && (
+        <p class="text-green-300 text-sm mt-1">Photo actuelle : {scene.photo}</p>
+      )}
+    </div>
+
+    <div class="flex gap-4">
+      <button type="submit" class="bg-yellow-400 text-green-900 font-bold px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors">
+        {id ? "Modifier" : "Ajouter"}
+      </button>
+      <a href="/admin" class="bg-white/20 px-8 py-3 rounded-full hover:bg-white/40 transition-colors">
+        Retour
+      </a>
+    </div>
+
+  </form>
+
+</Layout>

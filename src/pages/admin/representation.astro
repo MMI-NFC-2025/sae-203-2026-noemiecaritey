@@ -1,0 +1,105 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var url = new URL(Astro.request.url);
+var id = url.searchParams.get("id");
+var representation = null;
+
+if (id) {
+  representation = await pb.collection("representation").getOne(id);
+}
+
+// Charger les artistes et scènes pour les listes déroulantes
+var artistes = await pb.collection("artiste").getFullList({ sort: "nom" });
+var scenes = await pb.collection("scene").getFullList({ sort: "nom" });
+
+var message = "";
+if (Astro.request.method === "POST") {
+  var formData = await Astro.request.formData();
+
+  var data = {
+    artiste: formData.get("artiste"),
+    scene: formData.get("scene"),
+    date_heure: formData.get("date_heure"),
+  };
+
+  if (id) {
+    await pb.collection("representation").update(id, data);
+    message = "Représentation modifiée avec succès !";
+    representation = await pb.collection("representation").getOne(id);
+  } else {
+    var nouvelleRep = await pb.collection("representation").create(data);
+    message = "Représentation créée avec succès !";
+    id = nouvelleRep.id;
+    representation = nouvelleRep;
+  }
+}
+---
+
+<Layout title={id ? "Modifier une représentation" : "Ajouter une représentation"}>
+
+  <script is:inline>
+    if (!localStorage.getItem("pb_token")) {
+      window.location.href = "/connexion";
+    }
+  </script>
+
+  <h1 class="text-4xl font-black mb-8">{id ? "Modifier une représentation" : "Ajouter une représentation"}</h1>
+
+  {message && (
+    <div class="bg-green-500 text-white p-4 rounded-2xl mb-6 font-semibold">
+      {message}
+    </div>
+  )}
+
+  <form method="POST" class="max-w-2xl space-y-6">
+
+    <div>
+      <label for="artiste" class="block text-sm text-green-300 mb-1">Artiste</label>
+      <select id="artiste" name="artiste" required
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none">
+        <option value="">-- Choisir un artiste --</option>
+        {artistes.map(function (a) {
+          var selected = representation && representation.artiste === a.id;
+          return (
+            <option value={a.id} selected={selected}>{a.nom}</option>
+          );
+        })}
+      </select>
+    </div>
+
+    <div>
+      <label for="scene" class="block text-sm text-green-300 mb-1">Scène</label>
+      <select id="scene" name="scene" required
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none">
+        <option value="">-- Choisir une scène --</option>
+        {scenes.map(function (s) {
+          var selected = representation && representation.scene === s.id;
+          return (
+            <option value={s.id} selected={selected}>{s.nom}</option>
+          );
+        })}
+      </select>
+    </div>
+
+    <div>
+      <label for="date_heure" class="block text-sm text-green-300 mb-1">Date et heure</label>
+      <input type="datetime-local" id="date_heure" name="date_heure" required
+        value={representation ? representation.date_heure.substring(0, 16) : ""}
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+    </div>
+
+    <div class="flex gap-4">
+      <button type="submit" class="bg-yellow-400 text-green-900 font-bold px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors">
+        {id ? "Modifier" : "Ajouter"}
+      </button>
+      <a href="/admin" class="bg-white/20 px-8 py-3 rounded-full hover:bg-white/40 transition-colors">
+        Retour
+      </a>
+    </div>
+
+  </form>
+
+</Layout>

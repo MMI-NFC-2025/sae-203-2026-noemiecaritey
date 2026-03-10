@@ -1,0 +1,125 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var url = new URL(Astro.request.url);
+var id = url.searchParams.get("id");
+var artiste = null;
+
+if (id) {
+  artiste = await pb.collection("artiste").getOne(id);
+}
+
+var message = "";
+if (Astro.request.method === "POST") {
+  var formData = await Astro.request.formData();
+
+  var data = {
+    nom: formData.get("nom"),
+    genre_musical: formData.get("genre"),
+    description: formData.get("description"),
+  };
+
+
+  var photo = formData.get("photo_principale");
+  if (photo && photo.size > 0) {
+    data.photo_principale = photo;
+  }
+
+
+  var galerie = formData.getAll("galerie");
+  var galerieValides = [];
+  for (var i = 0; i < galerie.length; i++) {
+    if (galerie[i].size > 0) {
+      galerieValides.push(galerie[i]);
+    }
+  }
+  if (galerieValides.length > 0) {
+    data.galerie = galerieValides;
+  }
+
+  if (id) {
+    
+    await pb.collection("artiste").update(id, data);
+    message = "Artiste modifié avec succès !";
+    
+    artiste = await pb.collection("artiste").getOne(id);
+  } else {
+
+    var nouvelArtiste = await pb.collection("artiste").create(data);
+    message = "Artiste créé avec succès !";
+    id = nouvelArtiste.id;
+    artiste = nouvelArtiste;
+  }
+}
+---
+
+<Layout title={id ? "Modifier un artiste" : "Ajouter un artiste"}>
+
+  <script is:inline>
+    if (!localStorage.getItem("pb_token")) {
+      window.location.href = "/connexion";
+    }
+  </script>
+
+  <h1 class="text-4xl font-black mb-8">{id ? "Modifier un artiste" : "Ajouter un artiste"}</h1>
+
+  {message && (
+    <div class="bg-green-500 text-white p-4 rounded-2xl mb-6 font-semibold">
+      {message}
+    </div>
+  )}
+
+  <form method="POST" enctype="multipart/form-data" class="max-w-2xl space-y-6">
+
+    <div>
+      <label for="nom" class="block text-sm text-green-300 mb-1">Nom de l'artiste</label>
+      <input type="text" id="nom" name="nom" required
+        value={artiste ? artiste.nom : ""}
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+    </div>
+
+    <div>
+      <label for="genre" class="block text-sm text-green-300 mb-1">Genre musical</label>
+      <input type="text" id="genre" name="genre" required
+        value={artiste ? artiste.genre : ""}
+        class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+    </div>
+
+    <div>
+      <label for="description" class="block text-sm text-green-300 mb-1">Description</label>
+      <textarea id="description" name="description" rows="5"
+        class="w-full px-4 py-3 rounded-2xl text-gray-900 outline-none">{artiste ? artiste.description : ""}</textarea>
+    </div>
+
+    <div>
+      <label for="photo_principale" class="block text-sm text-green-300 mb-1">Photo principale</label>
+      <input type="file" id="photo_principale" name="photo_principale" accept="image/*"
+        class="w-full text-white" />
+      {artiste && artiste.photo_principale && (
+        <p class="text-green-300 text-sm mt-1">Photo actuelle : {artiste.photo_principale}</p>
+      )}
+    </div>
+
+    <div>
+      <label for="galerie" class="block text-sm text-green-300 mb-1">Galerie photos</label>
+      <input type="file" id="galerie" name="galerie" accept="image/*" multiple
+        class="w-full text-white" />
+      {artiste && artiste.galerie && artiste.galerie.length > 0 && (
+        <p class="text-green-300 text-sm mt-1">{artiste.galerie.length} photo(s) dans la galerie</p>
+      )}
+    </div>
+
+    <div class="flex gap-4">
+      <button type="submit" class="bg-yellow-400 text-green-900 font-bold px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors">
+        {id ? "Modifier" : "Ajouter"}
+      </button>
+      <a href="/admin" class="bg-white/20 px-8 py-3 rounded-full hover:bg-white/40 transition-colors">
+        Retour
+      </a>
+    </div>
+
+  </form>
+
+</Layout>

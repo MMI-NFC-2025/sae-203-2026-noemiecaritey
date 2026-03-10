@@ -1,0 +1,106 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import pb from "../../lib/pocketbase.mjs";
+
+var artistes = await pb.collection("artiste").getFullList({ sort: "nom" });
+var scenes = await pb.collection("scene").getFullList({ sort: "nom" });
+var representations = await pb.collection("representation").getFullList({
+  sort: "date_heure",
+  expand: "artiste,scene",
+});
+---
+
+<Layout title="Administration">
+
+  <script is:inline>
+    if (!localStorage.getItem("pb_token")) {
+      window.location.href = "/connexion";
+    }
+  </script>
+
+  <h1 class="text-4xl font-black mb-8">Administration</h1>
+
+  <!-- Artistes -->
+  <section class="mb-12">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Artistes</h2>
+      <a href="/admin/artiste" class="bg-yellow-400 text-green-900 font-bold px-6 py-2 rounded-full hover:bg-yellow-300 transition-colors">
+        + Ajouter
+      </a>
+    </div>
+    <div class="bg-green-800 rounded-2xl overflow-hidden">
+      {artistes.map(function (a) {
+        return (
+          <div class="flex justify-between items-center p-4 border-b border-green-600">
+            <div>
+              <p class="font-bold">{a.nom}</p>
+              <p class="text-sm text-green-300">{a.genre_musical}</p>
+            </div>
+            <a href={"/admin/artiste?id=" + a.id} class="text-yellow-400 hover:underline">
+              Modifier
+            </a>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- Scènes -->
+  <section class="mb-12">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Scènes</h2>
+      <a href="/admin/scene" class="bg-yellow-400 text-green-900 font-bold px-6 py-2 rounded-full hover:bg-yellow-300 transition-colors">
+        + Ajouter
+      </a>
+    </div>
+    <div class="bg-green-800 rounded-2xl overflow-hidden">
+      {scenes.map(function (s) {
+        return (
+          <div class="flex justify-between items-center p-4 border-b border-green-600">
+            <div>
+              <p class="font-bold">{s.nom}</p>
+              <p class="text-sm text-green-300">{s.localisation} — {s.capacite} pers.</p>
+            </div>
+            <a href={"/admin/scene?id=" + s.id} class="text-yellow-400 hover:underline">
+              Modifier
+            </a>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- Représentations -->
+  <section class="mb-12">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold">Représentations</h2>
+      <a href="/admin/representation" class="bg-yellow-400 text-green-900 font-bold px-6 py-2 rounded-full hover:bg-yellow-300 transition-colors">
+        + Ajouter
+      </a>
+    </div>
+    <div class="bg-green-800 rounded-2xl overflow-hidden">
+      {representations.map(function (r) {
+        var artiste = r.expand ? r.expand.artiste : null;
+        var scene = r.expand ? r.expand.scene : null;
+        var date = new Date(r.date_heure);
+        var dateTexte = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+        var heureTexte = date.getHours() + "h" + String(date.getMinutes()).padStart(2, "0");
+
+        return (
+          <div class="flex justify-between items-center p-4 border-b border-green-600">
+            <div>
+              <p class="font-bold">{artiste ? artiste.nom : "?"} → {scene ? scene.nom : "?"}</p>
+              <p class="text-sm text-green-300">{dateTexte} à {heureTexte}</p>
+            </div>
+            <a href={"/admin/representation?id=" + r.id} class="text-yellow-400 hover:underline">
+              Modifier
+            </a>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+
+
+</Layout>
