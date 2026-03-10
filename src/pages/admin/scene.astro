@@ -23,7 +23,7 @@ if (Astro.request.method === "POST") {
     capacite: Number(formData.get("capacite")),
   };
 
-  // Gérer la photo
+
   var photo = formData.get("photo");
   if (photo && photo.size > 0) {
     data.photo = photo;
