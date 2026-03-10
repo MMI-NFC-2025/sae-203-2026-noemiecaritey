@@ -14,7 +14,7 @@ var scenes = await pb.collection("scene").getFullList({
    {scenes.map(function (scene) {
      var photoUrl = "";
      if (scene.photo) {
-       photoUrl = "http://127.0.0.1:8090/api/files/" + scene.collectionId + "/" + scene.id + "/" + scene.photo;
+       photoUrl = " http://127.0.0.1:8090/api/files/" + scene.collectionId + "/" + scene.id + "/" + scene.photo;
      }
 
      return (
