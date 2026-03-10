@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 import Layout from "../../layouts/Layout.astro";
-import pb from "../../lib/pocketbase.mjs";
+import pb, { PB_URL } from "../../lib/pocketbase.mjs";
 
 var id = Astro.params.id;
 var scene = await pb.collection("scene").getOne(id);
@@ -14,7 +14,7 @@ var representations = await pb.collection("representation").getFullList({
 
 var photoUrl = "";
 if (scene.photo) {
- photoUrl = "http://127.0.0.1:8090/api/files/" + scene.collectionId + "/" + scene.id + "/" + scene.photo;
+ photoUrl = PB_URL + "/api/files/" + scene.collectionId + "/" + scene.id + "/" + scene.photo;
 }
 ---
 
@@ -59,7 +59,7 @@ if (scene.photo) {
 
      var artistePhoto = "";
      if (artiste.photo_principale) {
-       artistePhoto = " http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
+       artistePhoto = PB_URL + "/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
      }
 
      return (

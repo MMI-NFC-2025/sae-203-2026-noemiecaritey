@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import pb from "../../lib/pocketbase.mjs";
+import pb, { PB_URL } from "../../lib/pocketbase.mjs";
 
 var representations = await pb.collection("representation").getFullList({
  sort: "date_heure",
@@ -71,7 +71,7 @@ for (var i = 0; i < representations.length; i++) {
      </select>
    </div>
    <a href="/programme" class="bg-red-600 text-yellow-400 font-bold px-8 py-3 rounded-full hover:bg-red-600 transition-colors">
-        programme pdf
+         Télécharger le programme (PDF)
       </a>
  </div>
 
@@ -89,7 +89,7 @@ for (var i = 0; i < representations.length; i++) {
 
      var photoUrl = "";
      if (artiste.photo_principale) {
-       photoUrl = " http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
+       photoUrl = PB_URL + "/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
      }
 
      return (
