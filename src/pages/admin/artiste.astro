@@ -63,7 +63,7 @@ if (Astro.request.method === "POST") {
     }
   </script>
 
-  <h1 class="text-4xl font-black mb-8">{id ? "Modifier un artiste" : "Ajouter un artiste"}</h1>
+  <h1 class="text-4xl font-black text-green-700 mb-8">{id ? "Modifier un artiste" : "Ajouter un artiste"}</h1>
 
   {message && (
     <div class="bg-green-500 text-white p-4 rounded-2xl mb-6 font-semibold">
@@ -74,40 +74,40 @@ if (Astro.request.method === "POST") {
   <form method="POST" enctype="multipart/form-data" class="max-w-2xl space-y-6">
 
     <div>
-      <label for="nom" class="block text-sm text-green-300 mb-1">Nom de l'artiste</label>
+      <label for="nom" class="block text-sm text-green-700 mb-1">Nom de l'artiste</label>
       <input type="text" id="nom" name="nom" required
         value={artiste ? artiste.nom : ""}
         class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
     </div>
 
     <div>
-      <label for="genre" class="block text-sm text-green-300 mb-1">Genre musical</label>
+      <label for="genre" class="block text-sm text-green-700 mb-1">Genre musical</label>
       <input type="text" id="genre" name="genre" required
         value={artiste ? artiste.genre : ""}
         class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
     </div>
 
     <div>
-      <label for="description" class="block text-sm text-green-300 mb-1">Description</label>
+      <label for="description" class="block text-sm text-green-700 mb-1">Description</label>
       <textarea id="description" name="description" rows="5"
         class="w-full px-4 py-3 rounded-2xl text-gray-900 outline-none">{artiste ? artiste.description : ""}</textarea>
     </div>
 
     <div>
-      <label for="photo_principale" class="block text-sm text-green-300 mb-1">Photo principale</label>
+      <label for="photo_principale" class="block text-sm text-green-700 mb-1">Photo principale</label>
       <input type="file" id="photo_principale" name="photo_principale" accept="image/*"
         class="w-full text-white" />
       {artiste && artiste.photo_principale && (
-        <p class="text-green-300 text-sm mt-1">Photo actuelle : {artiste.photo_principale}</p>
+        <p class="text-green-700 text-sm mt-1">Photo actuelle : {artiste.photo_principale}</p>
       )}
     </div>
 
     <div>
-      <label for="galerie" class="block text-sm text-green-300 mb-1">Galerie photos</label>
+      <label for="galerie" class="block text-sm text-green-700 mb-1">Galerie photos</label>
       <input type="file" id="galerie" name="galerie" accept="image/*" multiple
         class="w-full text-white" />
       {artiste && artiste.galerie && artiste.galerie.length > 0 && (
-        <p class="text-green-300 text-sm mt-1">{artiste.galerie.length} photo(s) dans la galerie</p>
+        <p class="text-green-700 text-sm mt-1">{artiste.galerie.length} photo(s) dans la galerie</p>
       )}
     </div>
 
@@ -115,7 +115,7 @@ if (Astro.request.method === "POST") {
       <button type="submit" class="bg-yellow-400 text-green-900 font-bold px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors">
         {id ? "Modifier" : "Ajouter"}
       </button>
-      <a href="/admin" class="bg-white/20 px-8 py-3 rounded-full hover:bg-white/40 transition-colors">
+      <a href="/admin" class="bg-green-800 px-8 py-3 rounded-full hover:bg-yellow-500 transition-colors">
         Retour
       </a>
     </div>

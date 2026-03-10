@@ -39,13 +39,13 @@ for (var i = 0; i < representations.length; i++) {
 ---
 
 <Layout title="Programme">
- <h1 class="text-4xl font-black mb-6">Programme</h1>
+ <h1 class="text-4xl font-black text-green-700 mb-6">Programme</h1>
 
  <!-- Filtres -->
  <div class="flex flex-wrap gap-4 mb-8">
    <div>
-     <label class="block text-sm text-green-300 mb-1">Jour</label>
-     <select id="filtre-jour" class="bg-green-800 border border-green-600 rounded-full px-4 py-2 text-white">
+     <label class="block text-sm text-green-900 mb-1">Jour</label>
+     <select id="filtre-jour" class="bg-green-700 border border-green-600 rounded-full px-4 py-2 text-white">
        <option value="tous">Tous les jours</option>
        {jours.map(function (jour) {
          return <option value={jour}>{jour}</option>;
@@ -53,8 +53,8 @@ for (var i = 0; i < representations.length; i++) {
      </select>
    </div>
    <div>
-     <label class="block text-sm text-green-300 mb-1">Genre</label>
-     <select id="filtre-genre" class="bg-green-800 border border-green-600  px-4 py-2 text-white">
+     <label class="block text-sm text-green-900 mb-1">Genre</label>
+     <select id="filtre-genre" class="bg-green-700 border border-green-600  px-4 py-2 text-white">
        <option value="tous">Tous les genres</option>
        {genres.map(function (genre) {
          return <option value={genre}>{genre}</option>;
@@ -62,8 +62,8 @@ for (var i = 0; i < representations.length; i++) {
      </select>
    </div>
    <div>
-     <label class="block text-sm text-green-300 mb-1">Scène</label>
-     <select id="filtre-scene" class="bg-green-800 border border-green-600  px-4 py-2 text-white">
+     <label class="block text-sm text-green-900 mb-1">Scène</label>
+     <select id="filtre-scene" class="bg-green-700 border border-green-600  px-4 py-2 text-white">
        <option value="tous">Toutes les scènes</option>
        {scenes.map(function (scene) {
          return <option value={scene.nom}>{scene.nom}</option>;
@@ -103,7 +103,7 @@ for (var i = 0; i < representations.length; i++) {
            <img src={photoUrl} alt={artiste.nom} class="w-16 h-16 md:w-20 md:h-20 object-cover " />
          )}
          <div class="text-center min-w-24">
-           <p class="text-sm text-green-300">{jourLong}</p>
+           <p class="text-sm text-green-200">{jourLong}</p>
            <p class="text-xl font-bold text-yellow-400">{heureTexte}</p>
          </div>
          <div>

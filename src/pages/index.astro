@@ -24,7 +24,7 @@ var representations = await pb.collection("representation").getFullList({
     <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-6 sm:mb-8 leading-tight">
       <span class="text-white block">Echos Sonores</span>
     </h1>
-    <p class="text-green-300 text-lg sm:text-xl mb-8 sm:mb-12">Rendez vous le 28-29-30 octobre 2026 à</p>
+    <p class="text-green-300 text-lg sm:text-xl mb-8 sm:mb-12">Rendez vous le 28-29-30 octobre 2026 à Audincourt</p>
     <a href="#" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 sm:px-12 sm:py-5 rounded-full text-base sm:text-xl shadow-2xl transition-all duration-300 hover:shadow-xl hover:scale-105">
       Billetterie
     </a>
@@ -33,7 +33,7 @@ var representations = await pb.collection("representation").getFullList({
 
   <!-- Aperçu programmation -->
   <section class="mb-12">
-    <h2 class="text-3xl font-black mb-6">Programmation</h2>
+    <h2 class="text-3xl font-black text-green-800 mb-6">Programmation</h2>
     <div class="w-full overflow-hidden rounded-xl">
   <div class="flex gap-4 sm:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory scrollbar-hide touch-pan-x">
     {representations.map(function (rep) {
@@ -84,15 +84,15 @@ var representations = await pb.collection("representation").getFullList({
 
   <!-- Blocs navigation -->
   <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-    <a href="/artistes" class="bg-green-800 p-8 text-center hover:bg-green-600 transition-colors">
+    <a href="/artistes" class="bg-green-700 p-8 text-center hover:bg-green-600 transition-colors">
       <h3 class="text-2xl font-bold mb-2">Artistes</h3>
       <p class="text-green-300">Découvrez la programmation</p>
     </a>
-    <a href="/scenes" class="bg-green-800 p-8 text-center hover:bg-green-600 transition-colors">
+    <a href="/scenes" class="bg-green-700 p-8 text-center hover:bg-green-600 transition-colors">
       <h3 class="text-2xl font-bold mb-2">Scènes</h3>
       <p class="text-green-300">Explorez les lieux</p>
     </a>
-    <a href="/infos" class="bg-green-800 p-8 text-center hover:bg-green-600 transition-colors">
+    <a href="/infos" class="bg-green-700 p-8 text-center hover:bg-green-600 transition-colors">
       <h3 class="text-2xl font-bold mb-2">Infos pratiques</h3>
       <p class="text-green-300">Accès, tarifs, hébergement</p>
     </a>
@@ -100,7 +100,7 @@ var representations = await pb.collection("representation").getFullList({
 
   <!-- Partenaires -->
   <section class="mb-12">
-    <h2 class="text-3xl font-black mb-4">Partenaires</h2>
+    <h2 class="text-3xl font-black text-green-800 mb-4">Partenaires</h2>
     <img src="../../public/france3.png" alt="Logos des partenaires" class="w-20 h-auto object-contain" />
     <img src="../../public/estrepublicain.png" alt="Logos des partenaires" class="w-20 h-auto object-contain" />
   </section>
