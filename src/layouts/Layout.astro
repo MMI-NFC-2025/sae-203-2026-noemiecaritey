@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 
+import Logo from '../assets/logo.svg';
+
 const {title} = Astro.props;
 ---
 
@@ -25,7 +27,7 @@ const {title} = Astro.props;
 
        <!-- Logo -->
        <a href="/" class="flex items-center gap-3 text-2xl font-black">
-          <img src="/logo.svg" alt="Logo Echos Sonores" class="w-24 h-10" />
+          <Logo/>
 	   </a>
 
        <!-- Menu desktop -->
@@ -37,6 +39,7 @@ const {title} = Astro.props;
          <li><a href="/scenes" class="hover:text-yellow-400 transition-colors">Scènes</a></li>
          <li><a href="/infos" class="hover:text-yellow-400 transition-colors">Infos</a></li>
          <li><a href="/contact" class="hover:text-yellow-400 transition-colors">Contact</a></li>
+         <li><a href="/connexion" class="hover:text-yellow-400 transition-colors">Connexion</a></li>
        </ul>
 
        <!-- Bouton menu mobile -->

@@ -11,56 +11,70 @@ var representations = await pb.collection("representation").getFullList({
 <Layout title="Accueil">
 
   <!-- Hero bandeau -->
-  <section class="text-center py-16 mb-12">
-    <p class="text-yellow-400 text-lg font-semibold mb-4 uppercase tracking-widest">Festival de musique</p>
-    <h1 class="text-6xl md:text-8xl font-black mb-6">
-      <span class="text-white">Echos Sonores</span>
-    <p class="text-green-300 text-lg mb-8">Lieu du festival</p>
-    <a href="#" class="bg-yellow-400 text-green-900 font-bold px-10 py-4 rounded-full text-lg hover:bg-yellow-300 transition-colors">
+<!-- Hero bandeau responsive -->
+<section class="relative overflow-hidden h-[60vh] md:h-[80vh] lg:h-screen flex items-center justify-center text-center mb-12 px-4">
+  <div class="absolute inset-0">
+    <img src="/photo_accueil.jpg" alt="Echos Sonores Festival" 
+         class="w-full h-full object-cover brightness-50" />
+    <div class="absolute inset-0 bg-black/40"></div>
+  </div>
+
+  <div class="relative z-10 max-w-4xl mx-auto">
+    <p class="text-yellow-400 text-base sm:text-lg font-semibold mb-4 uppercase tracking-widest">Festival de musique</p>
+    <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-6 sm:mb-8 leading-tight">
+      <span class="text-white block">Echos Sonores</span>
+    </h1>
+    <p class="text-green-300 text-lg sm:text-xl mb-8 sm:mb-12">Rendez vous le 28-29-30 octobre 2026 à</p>
+    <a href="#" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold px-8 py-4 sm:px-12 sm:py-5 rounded-full text-base sm:text-xl shadow-2xl transition-all duration-300 hover:shadow-xl hover:scale-105">
       Billetterie
     </a>
-  </section>
+  </div>
+</section>
 
   <!-- Aperçu programmation -->
   <section class="mb-12">
     <h2 class="text-3xl font-black mb-6">Programmation</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {representations.map(function (rep) {
-        var artiste = rep.expand.artiste;
-        var scene = rep.expand.scene;
-        var date = new Date(rep.date_heure);
-        var dateTexte = date.toLocaleDateString("fr-FR", {
-          day: "numeric",
-          month: "long",
-        });
-        var heureTexte = date.toLocaleTimeString("fr-FR", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+    <div class="w-full overflow-hidden rounded-xl">
+  <div class="flex gap-4 sm:gap-6 overflow-x-auto pb-8 scroll-smooth snap-x snap-mandatory scrollbar-hide touch-pan-x">
+    {representations.map(function (rep) {
+      var artiste = rep.expand.artiste;
+      var scene = rep.expand.scene;
+      var date = new Date(rep.date_heure);
+      var dateTexte = date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+      });
+      var heureTexte = date.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
 
-        var photoUrl = "";
-        if (artiste.photo_principale) {
-          photoUrl = "http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
-        }
+      var photoUrl = "";
+      if (artiste.photo_principale) {
+        photoUrl = "http://127.0.0.1:8090/api/files/" + artiste.collectionId + "/" + artiste.id + "/" + artiste.photo_principale;
+      }
 
-        return (
-          <a href={"/artistes/" + artiste.id} class="group relative block overflow-hidden aspect-[4/3]">
-            {photoUrl ? (
-              <img src={photoUrl} alt={artiste.nom}
-                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            ) : (
-              <div class="absolute inset-0 bg-green-800"></div>
-            )}
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
-            <div class="absolute bottom-0 left-0 p-5">
-              <h3 class="text-xl font-black">{artiste.nom}</h3>
-              <p class="text-yellow-400 font-semibold">{dateTexte} – {heureTexte}</p>
-              <p class="text-green-300 text-sm">{scene.nom}</p>
-            </div>
-          </a>
-        );
-      })}
-    </div>
+      return (
+        <a href={"/artistes/" + artiste.id} 
+           class="group relative block overflow-hidden aspect-[4/3] w-72 sm:w-80 flex-shrink-0 snap-center hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl">
+          {photoUrl ? (
+            <img src={photoUrl} alt={artiste.nom}
+              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          ) : (
+            <div class="absolute inset-0 bg-green-800"></div>
+          )}
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+          <div class="absolute bottom-0 left-0 p-5">
+            <h3 class="text-xl font-black">{artiste.nom}</h3>
+            <p class="text-yellow-400 font-semibold">{dateTexte} – {heureTexte}</p>
+            <p class="text-green-300 text-sm">{scene.nom}</p>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+</div>
+
     <div class="mt-6 text-center">
       <a href="/programme" class="bg-yellow-400 text-green-900 font-bold px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors">
         Voir le programme complet
@@ -87,6 +101,8 @@ var representations = await pb.collection("representation").getFullList({
   <!-- Partenaires -->
   <section class="mb-12">
     <h2 class="text-3xl font-black mb-4">Partenaires</h2>
+    <img src="../../public/france3.png" alt="Logos des partenaires" class="w-20 h-auto object-contain" />
+    <img src="../../public/estrepublicain.png" alt="Logos des partenaires" class="w-20 h-auto object-contain" />
   </section>
 
 </Layout>

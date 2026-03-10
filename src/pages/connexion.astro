@@ -1,0 +1,127 @@
+---
+export const prerender = false;
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Connexion">
+
+  <div class="max-w-md mx-auto mt-12">
+    <h1 class="text-4xl font-black mb-8 text-center">Connexion</h1>
+
+    <!-- Message d'erreur -->
+    <div id="erreur" class="hidden bg-red-500 text-white p-4 rounded-2xl mb-6 font-semibold"></div>
+
+    <!-- Message de succès -->
+    <div id="succes" class="hidden bg-green-500 text-white p-4 rounded-2xl mb-6 font-semibold"></div>
+
+    <div class="bg-green-800 rounded-2xl p-8">
+      <form id="form-connexion" class="space-y-6">
+
+        <div>
+          <label for="email" class="block text-sm text-green-300 mb-1">Adresse email</label>
+          <input type="email" id="email" required
+            placeholder="votre@email.fr"
+            class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm text-green-300 mb-1">Mot de passe</label>
+          <input type="password" id="password" required
+            placeholder="Votre mot de passe"
+            class="w-full px-4 py-3 rounded-full text-gray-900 outline-none" />
+        </div>
+
+        <button type="submit" class="w-full bg-yellow-400 text-green-900 font-bold px-8 py-3 rounded-full hover:bg-yellow-300 transition-colors">
+          Se connecter
+        </button>
+
+      </form>
+
+    </div>
+
+    <!-- Info connexion -->
+    <div id="info-user" class="hidden mt-8 bg-green-800 rounded-2xl p-8 text-center">
+      <p class="text-green-300 mb-2">Connecté en tant que :</p>
+      <p id="user-email" class="text-xl font-bold mb-4"></p>
+      <div class="flex justify-center gap-4">
+        <a href="/admin" class="bg-yellow-400 text-green-900 font-bold px-6 py-2 rounded-full hover:bg-yellow-300 transition-colors">
+          Administration
+        </a>
+        <button id="btn-deconnexion" class="bg-white/20 px-6 py-2 rounded-full hover:bg-white/40 transition-colors">
+          Se déconnecter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    // Connexion à PocketBase depuis le navigateur
+    var PB_URL = "http://127.0.0.1:8090";
+
+    // Vérifier si déjà connecté
+    var token = localStorage.getItem("pb_token");
+    var userEmail = localStorage.getItem("pb_email");
+
+    if (token && userEmail) {
+      afficherConnecte(userEmail);
+    }
+
+    // Formulaire de connexion
+    var form = document.getElementById("form-connexion");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+
+      // Appel à l'API PocketBase pour se connecter
+      fetch(PB_URL + "/api/collections/users/auth-with-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identity: email, password: password }),
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          if (data.token) {
+            // Connexion réussie
+            localStorage.setItem("pb_token", data.token);
+            localStorage.setItem("pb_email", data.record.email);
+            afficherConnecte(data.record.email);
+          } else {
+            // Erreur
+            var erreur = document.getElementById("erreur");
+            erreur.textContent = "Email ou mot de passe incorrect.";
+            erreur.classList.remove("hidden");
+          }
+        })
+        .catch(function () {
+          var erreur = document.getElementById("erreur");
+          erreur.textContent = "Erreur de connexion au serveur.";
+          erreur.classList.remove("hidden");
+        });
+    });
+
+    // Déconnexion
+    var btnDeco = document.getElementById("btn-deconnexion");
+    btnDeco.addEventListener("click", function () {
+      localStorage.removeItem("pb_token");
+      localStorage.removeItem("pb_email");
+      document.getElementById("form-connexion").classList.remove("hidden");
+      document.getElementById("info-user").classList.add("hidden");
+      document.getElementById("erreur").classList.add("hidden");
+
+      var succes = document.getElementById("succes");
+      succes.textContent = "Vous êtes déconnecté.";
+      succes.classList.remove("hidden");
+    });
+
+    function afficherConnecte(email) {
+      document.getElementById("form-connexion").parentElement.classList.add("hidden");
+      document.getElementById("info-user").classList.remove("hidden");
+      document.getElementById("user-email").textContent = email;
+    }
+  </script>
+
+</Layout>
