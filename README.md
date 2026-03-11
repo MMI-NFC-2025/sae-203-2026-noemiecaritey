@@ -3,6 +3,9 @@
 
 - Nom: CARITEY 
 - Prénom: Noémie
-- url: sae203-noemie-caritey.netlify.app
+- url (netlify): https://incomparable-platypus-a815d6.netlify.app
+    (publier): https://echossonores.noemiecaritey.fr
 
 - Backoffice de PocketBase: sae203.noemiecaritey.fr/_/
+    user: noemie.caritey@gmail.com
+    mdp: Dev3164!Ficelle
